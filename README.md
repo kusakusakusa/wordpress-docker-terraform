@@ -1,6 +1,6 @@
 # Wordpress Docker Terraform
 
-This project will create a wordpress instance running on top of docker. During Terraform will be used to provision the required resources and get the site up in no time.
+This project will create a wordpress instance running on top of `docker stack`.
 
 During deployment, terraform will provision the necessary resources on AWS and run the application using docker stack. The configurations are setup in a way that makes it portable and the data  persisted.
 
@@ -29,12 +29,18 @@ Volumes are binded to subdirectories in the `volumes` folder. The folder is pre-
 
 An AWS EC2 instance of `t2.nano` will be provisioned upon deployed. The EC2 instance will be associated with an Elastic IP.
 A Cloudfront distribution will provisioned and have the eip as the origin.
+In order to [use the ACM with Cloudfront to serve the site with HTTPS](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html#https-requirements-aws-region), the default region `us-east-1`, also known as `N. Virginia`, is selected.
 
 The intention is to allow requests to enter the sites via the Cloudfront distribution and, base on the `server_name` in the `nginx` directive, be directed to the correct servers to serve the correct site. This will require the corresponding domain names to be routed to the cloudfront distribution's domain using a CNAME record in the DNS zone file.
 
 The part on provisioning this DNS file on a hosted zone in AWS Route53 will not be provisioned and will reqiure manual intervention. This is because there may be other configurations involved with the DNS zone file that is not within the scope of this project, like Google Search Console verification for instance.
 
 ## Usage
+
+Create your ssh key using the command below. The ssh key will be use to generate the key pair for your EC2 instance. Keep the generated keys, especially the private key, securely. Do NOT change any part in the command below except `<COMMENT>`.
+```
+ssh-keygen -t rsa -f terraform/wordpress-docker-terraform -C <COMMENT>
+```
 
 Run `./setup.sh`. Follow the instructions to generate the files required for development and production.
 

@@ -5,6 +5,13 @@ nginx/*
 
 volumes/*
 
+wordpress-docker-terraform
+wordpress-docker-terraform.pub
+
 terraform.tfstate
 start.sh
 stop.sh
+deploy.sh
+destroy.sh
+terraform/scripts/app.sh
+terraform/scripts/create_volume.sh
