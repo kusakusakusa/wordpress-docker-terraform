@@ -23,6 +23,8 @@ The docker images used are `nginx`, `wordpress:5-fpm` and `mysql:5.7`. `FastCGI`
 
 The `docker-compose.base.yml` file will serve as the base `docker-compose` file and will contain only the nginx service with minimal configuration. Each wordpress site will share the nginx service and have their own separated `wordpress` and `mysql` services.
 
+Volumes are binded to subdirectories in the `volumes` folder. The folder is pre-created.
+
 ### In the Cloud
 
 An AWS EC2 instance of `t2.nano` will be provisioned upon deployed. The EC2 instance will be associated with an Elastic IP.
@@ -45,14 +47,13 @@ To create more sites, keep running `./setup.sh`.
 Duplicated domains will be blocked to prevent overriding of generated files. Some of the generated files contain passwords, so if they are overriden after being provisioned once, they are gone forever.
 
 Each run will generate these files:
-
-* `dev.sh` for running instance locally using `docker-compose`.
+* `terraform.tfstate` is the state file that terraform will refer to on the provisioning information for this project.
+* `start.sh` for running development instance locally using `docker-compose`. This will start all your wordpress sites.
+* `stop.sh` for running instance locally using `docker-compose`. This will stop all your wordpress sites.
 * `deploy.sh` for deploying to AWS using `terraform`.
 * `destroy.sh` for destroying your resources using `terraform`. Note that only `aws_eip` and `aws_ebs_volume` are not going to be destroyed due to need for persistence. These resources cost money so do take note to remove them manually if intended.
-* `docker-compose.yml` for each site that will contain the wordpress and database services to be deployed in docker stack in the AWS instance.
-* `terraform.tfstate` is the state file that terraform will refer to on the provisioning information for this project.
-
-It will also generate the respective `nginx.conf` site for each site.
+* `docker-compose.DOMAIN_NAME.yml` for each site that will contain the wordpress and database services to be deployed in docker stack in the AWS instance.
+* `nginx.DOMAIN_NAME.conf` for each site that will the location directive for each site listening on port 80 for the domain name as the `server_name`.
 
 These files will be uploaded to your instance via terraform when you deploy them by running './deploy.sh'. The `Dockerfile` will copy the relevant `docker-compose` and `nginx` files to the instances.
 

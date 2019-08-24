@@ -1,0 +1,10 @@
+docker-compose/*
+!docker-compose/base.yml
+
+nginx/*
+
+volumes/*
+
+terraform.tfstate
+start.sh
+stop.sh
