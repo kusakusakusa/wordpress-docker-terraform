@@ -1,9 +1,10 @@
-docker-compose/*
+docker-compose/**/*.yml
 !docker-compose/base.yml
 
-nginx/*
+nginx/**/*.conf
 
 volumes/*
+!volumes/.gitkeep
 
 wordpress-docker-terraform
 wordpress-docker-terraform.pub
@@ -15,3 +16,4 @@ deploy.sh
 destroy.sh
 terraform/scripts/app.sh
 terraform/scripts/create_volume.sh
+terraform/cloudfront/*.tf
