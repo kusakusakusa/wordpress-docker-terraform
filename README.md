@@ -17,7 +17,15 @@ Fast setup of wordpress at the lowest cost possible without compromising control
 
 ## Architecture
 
-### Application
+### Wordpress
+
+The `docker-compose` folder will hold the `docker-compose.yml` file for each site in separate file named after the domain name of each site. 
+
+In such a `docker-compose.yml`, the envionment variable `WORDPRESS_CONFIG_EXTRA` adds specific configurations to `wp-config.php` in order for wordpress to work with AWS Cloudfront amongst all the redirections. In particular, the `HTTP_HOST` is forced to be the desired domain name instead of following the `Host` header, and `HTTPS` is forced.
+
+TODO this new configuration has broken local dev work. Need to fix if want to run on local. Is there a need?
+
+### Docker
 
 The docker images used are `nginx`, `wordpress:5-fpm` and `mysql:5.7`. `FastCGI` will be used, hence the need for nginx.
 
@@ -34,6 +42,12 @@ In order to [use the ACM with Cloudfront to serve the site with HTTPS](https://d
 The intention is to allow requests to enter the sites via the Cloudfront distribution and, base on the `server_name` in the `nginx` directive, be directed to the correct servers to serve the correct site. This will require the corresponding domain names to be routed to the cloudfront distribution's domain using a CNAME record in the DNS zone file.
 
 The part on provisioning this DNS file on a hosted zone in AWS Route53 will not be provisioned and will reqiure manual intervention. This is because there may be other configurations involved with the DNS zone file that is not within the scope of this project, like Google Search Console verification for instance.
+
+### Cloudfront And Route53
+
+A public Route53 hosted zone is provisioned. This hosted zone is different from the original hosted zone that has the same name servers as the domain. In other words, there is now more than 1 hosted zone related to your domain.
+
+This hosted zone will contain the CNAME for validating the SSL certificate that is also provisioned by AWS ACM. This validation will require **manual action** to add a `NS` record to the original hosted zone and to give it the 4 NS nameservers of this newly provisioned hosted zone as the value. Refer to [this answer](https://stackoverflow.com/a/35785273/2667545) on stackoverflow for more details.
 
 ## Usage
 
@@ -61,15 +75,17 @@ Each run will generate these files:
 * `docker-compose.DOMAIN_NAME.yml` for each site that will contain the wordpress and database services to be deployed in docker stack in the AWS instance.
 * `nginx.DOMAIN_NAME.conf` for each site that will the location directive for each site listening on port 80 for the domain name as the `server_name`.
 
-These files will be uploaded to your instance via terraform when you deploy them by running './deploy.sh'. The `Dockerfile` will copy the relevant `docker-compose` and `nginx` files to the instances.
+These files will be uploaded to your instance via terraform when you deploy them by running `./deploy.sh`. The `Dockerfile` will copy the relevant `docker-compose` and `nginx` files to the instances.
+
+The script will stay at provisioning the ACM certificate for quite some time. It will require **[manual intervention](Cloudfront_And_Route53)** or else it will not work. This is a [conscious decision](#Considerations).
 
 These files are ignored by git by default as they can be generated. Do keep them safely as they contain passwords that the application(s) need to function.
 
 ### Development
 
-Run the command:
+Run the command at **root of project**:
 ```
-./dev.sh
+./start.sh
 ```
 
 ### Deployment
@@ -84,6 +100,11 @@ To destroy the resources, run the command
 ./destroy.sh
 ```
 Note that the `aws_eip` and `aws_ebs_volume` resources will not be destroyed. These resources cost money so do take note to remove them manually if intended.
+
+After creating your user account and website, you may need to invalidate your cloudfront so flush away the cached response. It will become a common practice to invalidate the cloudfront cache, so a script is made. Run the command below:
+```
+./invalidate.sh
+```
 
 ## Considerations
 

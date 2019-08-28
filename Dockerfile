@@ -15,4 +15,5 @@ COPY ./docker-compose ./docker-compose
 COPY ./nginx/production ./nginx/production
 COPY ./terraform/wordpress-docker-terraform .
 COPY ./terraform/wordpress-docker-terraform.pub .
-COPY ./php-uploads.ini .
+COPY ./terraform/cloudfront .
+COPY ./php-uploads.ini ./php-uploads.ini
