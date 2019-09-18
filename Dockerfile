@@ -12,8 +12,6 @@ COPY ./terraform/main.tf .
 # copy scripts for instance to run
 COPY ./terraform/scripts ./terraform/scripts
 COPY ./docker-compose ./docker-compose
-COPY ./nginx/production ./nginx/production
 COPY ./terraform/wordpress-docker-terraform .
 COPY ./terraform/wordpress-docker-terraform.pub .
 COPY ./terraform/cloudfront .
-COPY ./php-uploads.ini ./php-uploads.ini

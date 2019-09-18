@@ -33,6 +33,10 @@ resource "null_resource" "create_volume" {
     null_resource.startup
   ]
 
+  triggers = {
+    build_number = "${timestamp()}"
+  }
+
   provisioner "file" {
     source = "./terraform/scripts/create_volume.sh"
     destination = "/tmp/create_volume.sh"
@@ -51,11 +55,6 @@ resource "null_resource" "create_volume" {
       "chmod +x /tmp/create_volume.sh",
       "/tmp/create_volume.sh"
     ]
-  }
-
-  provisioner "file" {
-    source = "./php-uploads.ini"
-    destination = "/wordpress-docker-terraform/php-uploads.ini"
   }
 }
 
@@ -92,12 +91,6 @@ resource "null_resource" "app" {
 
   triggers = {
     build_number = "${timestamp()}"
-  }
-
-  # copy folder 'production'
-  provisioner "file" {
-    source = "./nginx/production"
-    destination = "/wordpress-docker-terraform/nginx"
   }
 
   # copy folder 'docker-compose'

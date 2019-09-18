@@ -6,9 +6,11 @@ resource "aws_key_pair" "this" {
 resource "aws_security_group" "this" {
   name = var.project_name
   description = "Security group for ${var.project_name} project"
+  # TODO only open up ports that used
+  # TODO only listen to cidr block corresponding to cloudfront (refer to README.d#TODOs on AmazonIpSpaceChanged)
   ingress {
-    from_port = 80
-    to_port = 80
+    from_port = 1024
+    to_port = 65535
     protocol = "tcp"
     cidr_blocks = [
       "0.0.0.0/0"
@@ -72,11 +74,6 @@ resource "aws_eip" "this" {
   vpc = true
   tags = {
     Name = var.project_name
-  }
-
-  # needs to persist
-  lifecycle {
-    prevent_destroy = true
   }
 }
 
