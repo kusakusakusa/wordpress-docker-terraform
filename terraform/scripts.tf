@@ -86,11 +86,16 @@ resource "null_resource" "reboot" {
 
 resource "null_resource" "app" {
   depends_on = [
-    null_resource.reboot,
+    null_resource.reboot
   ]
 
   triggers = {
     build_number = "${timestamp()}"
+  }
+
+  provisioner "file" {
+    source = "./uploads.ini"
+    destination = "/wordpress-docker-terraform"
   }
 
   # copy folder 'docker-compose'

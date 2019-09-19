@@ -108,6 +108,7 @@ services:
       - ${the_port}:80
     volumes:
       - ${absolute_path}/volumes/wp-${dns_valid_domain_name}:/var/www/html
+      - ${absolute_path}/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     depends_on:
       - db-${dns_valid_domain_name}
     environment:

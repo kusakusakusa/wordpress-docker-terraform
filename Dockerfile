@@ -15,3 +15,4 @@ COPY ./docker-compose ./docker-compose
 COPY ./terraform/wordpress-docker-terraform .
 COPY ./terraform/wordpress-docker-terraform.pub .
 COPY ./terraform/cloudfront .
+COPY ./terraform/uploads.ini ./uploads.ini
