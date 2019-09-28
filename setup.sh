@@ -311,6 +311,57 @@ resource "aws_cloudfront_distribution" "${dns_valid_domain_name}" {
     compress = true
     viewer_protocol_policy = "redirect-to-https"
   }
+
+  ordered_cache_behavior {
+    path_pattern = "wp-includes/*"
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id = "cf-${dns_valid_domain_name}"
+
+    forwarded_values {
+      query_string = false
+
+      headers = [
+        "Host",
+        "Origin",
+        "Access-Control-Request-Headers",
+        "Access-Control-Request-Methods",
+      ]
+
+      cookies {
+        forward = "none"
+      }
+    }
+
+    # rely on origin
+    compress = true
+    viewer_protocol_policy = "redirect-to-https"
+  }
+
+  ordered_cache_behavior {
+    path_pattern = "wp-content/*"
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id = "cf-${dns_valid_domain_name}"
+
+    forwarded_values {
+      query_string = false
+
+      headers = [
+        "Origin",
+        "Access-Control-Request-Headers",
+        "Access-Control-Request-Methods",
+      ]
+
+      cookies {
+        forward = "none"
+      }
+    }
+
+    # rely on origin
+    compress = true
+    viewer_protocol_policy = "redirect-to-https"
+  }
 }
 EOF
 
